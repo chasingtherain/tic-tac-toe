@@ -45,6 +45,7 @@ const Player = (playerId) => {
             if(sortedDiffArr[i] == sortedDiffArr[i+1]){
                 console.log("game won");
             }
+            
         }
         console.log("diff arr: " + differenceArr);
 
