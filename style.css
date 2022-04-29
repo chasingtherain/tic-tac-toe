@@ -1,7 +1,7 @@
 /* main container */
-*{
+/* *{
     border: 1px solid red;
-}
+} */
 .container{
     display: flex;
     flex-direction: column;
@@ -11,14 +11,21 @@
 }
 /* header */
 .header{
-    font-size: 30px;
+    font-size: 32px;
     padding: 0;
     background-color:aquamarine;
     border-bottom: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-content: center;
 }
 /* main content */
 .game-message{
-    font-size: 30px;
+    font-size: 60px;
+    font-weight: 800;
+    block-size: 95px;
+    margin: 0;
+    padding: 0;
 }
 
 .game-board{
@@ -26,22 +33,18 @@
     justify-content: center;
     align-content: center;
     flex-wrap: wrap;
-    width: 500px;
+    width: 610px;
     margin-left: auto;
     margin-right: auto;
 }
 .game-grid{
-    height: 155px;
-    width: 155px;
-    font-size: 75px;
+    height: 200px;
+    width: 200px;
+    box-sizing: border-box;
+    font-size: 100px;
     font-weight: 600;
-    border: 1px solid pink;
-    display: flex;
-    justify-content: center;
-    align-content: center;
-}
-
-#one{
+    padding-top: 35px;
+    border: 1px solid rgb(84, 83, 165);
     display: flex;
     justify-content: center;
     align-content: center;
@@ -53,7 +56,7 @@
 
 #restart{
     margin: 10px;
-    padding: 5px;
+    padding: 8px 40px;
     border-radius: 3px;
     border: 1px solid grey;
     font-size: 25px;
@@ -65,5 +68,7 @@
     bottom: 0;
     width: 100%;
     text-align: center;
+    margin-top: 20px;
     margin-bottom: 5px;
+    font-size: 25px;
 }

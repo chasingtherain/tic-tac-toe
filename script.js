@@ -24,38 +24,7 @@ const Player = (playerId) => {
         selectedTile.sort();
         console.log("Player " + playerId + " chose: " + selectedTile)
     }
-    
-    const winGameCheck = () => {
-        let length = selectedTile.length
-        if (length < 3) return;
-        let differenceArr = []; // arr stores difference between numbers in sorted array
-        
-        for(i=1; i < length; i++){
-           for(j=1;j<length;j++){
-            let difference = selectedTile[length-i] - selectedTile[length-j-1]
-            if (selectedTile[length-i] == selectedTile[length-j-1]) continue;
-            differenceArr.push(difference)
-           }
-        }
-        // checks if difference arr has duplicates
-        let sortedDiffArr = differenceArr.sort();
-        let diffLength = sortedDiffArr.length
-
-        for (i=0;i< diffLength;i++){
-            if(sortedDiffArr[i] == sortedDiffArr[i+1]){
-                console.log("game won");
-            }
-            
-        }
-        console.log("diff arr: " + differenceArr);
-
-    }
-
-    // const checkIfPlayerWon = () => {
-
-    // }
-
-    return {playerId,playerSymbol,updatePlayerSelection, winGameCheck}
+    return {playerId,playerSymbol,updatePlayerSelection}
 }
 
 // player declaration
@@ -64,7 +33,9 @@ const playerTwo = Player(2)
 let currentPlayer = playerOne;
 let isPlayerOneTurn = true;
 
+
 const GameBoard = () => {
+    let gameOver = false
     const announcementMessage = (playerId) =>{
         if (playerId%2==0){
             gameMessage.textContent = "O's turn";
@@ -73,17 +44,66 @@ const GameBoard = () => {
             gameMessage.textContent = "X's turn";
         }
     }
+    let boardState = {
+        "1": null,
+        "2": null,
+        "3": null,
+        "4": null,
+        "5": null,
+        "6": null,
+        "7": null,
+        "8": null,
+        "9": null
+    }
+
+    const setBoardState = (tileNum, player) =>{
+        boardState[tileNum] = player;
+        console.log(boardState);
+    }
+
+    const checkWin = (currentPlayer) => {
+        // console.log(currentPlayer)
+        // console.log(board.boardState)
+        
+        // check vertical
+        for(i=1;i<=3;i++){
+            if(board.boardState[i] == currentPlayer.playerSymbol &&
+                board.boardState[i+3] == currentPlayer.playerSymbol &&
+                board.boardState[i+6] == currentPlayer.playerSymbol
+            ) return gameEnd();
+        }
+
+        // check horizontal
+        for(i=1;i<=9;i+=3){
+            if(board.boardState[i] == currentPlayer.playerSymbol &&
+                board.boardState[i+1] == currentPlayer.playerSymbol &&
+                board.boardState[i+2] == currentPlayer.playerSymbol
+            ) return gameEnd();
+        }
+
+        // check diagonal
+        if (board.boardState[1] == currentPlayer.playerSymbol &&
+            board.boardState[5] == currentPlayer.playerSymbol &&
+            board.boardState[9] == currentPlayer.playerSymbol 
+            ||
+            board.boardState[3] == currentPlayer.playerSymbol &&
+            board.boardState[5] == currentPlayer.playerSymbol &&
+            board.boardState[7] == currentPlayer.playerSymbol
+            ) return gameEnd();
+    
+        let filled = 0;
+        for(i=1;i<=9;i++){
+            if(board.boardState[i] != null){
+                filled+=1;
+                if(filled == 9) return gameEnd("draw")
+            }
+        }
+    }
+
     const turnChange = () => {
         isPlayerOneTurn = !isPlayerOneTurn
         if (isPlayerOneTurn) currentPlayer = playerOne
         else currentPlayer = playerTwo
-    }
-
-    const isTileSelected = (tile) => {
-        if(tile.textContent = ""){
-            return false;
-        } 
-        return true;
     }
 
     const resetBoard = () => {
@@ -92,8 +112,27 @@ const GameBoard = () => {
                 gameGrid.textContent = "";
             }
         )
+        gameMessage.textContent = "O starts first";
+        gameMessage.style.color = "black";
+        isPlayerOneTurn = true;
+        currentPlayer = playerOne;
+        board.gameOver = false;
+        for(i=1;i<=9;i++){
+            board.boardState[i] = null;
+        }
     }
-    return {announcementMessage,isTileSelected,resetBoard, turnChange}
+
+    const isGameOver = () => {
+        return board.gameOver;
+    }
+    const gameEnd = (outcome) => {
+        if (outcome == "draw") gameMessage.textContent = `Its a draw!`
+        else gameMessage.textContent = `${currentPlayer.playerSymbol} won!`;
+        gameMessage.style.color = "green"
+        board.gameOver = true;
+    }
+
+    return {announcementMessage,boardState,checkWin,isGameOver,gameEnd,resetBoard, setBoardState, turnChange}
 }
 
 // game board
@@ -106,34 +145,32 @@ const board = GameBoard();
 gameGrids.forEach(
     (gameGrid) => {
         gameGrid.addEventListener("click", (event) =>{
-            let selectedTile = event.target;
-            let selectedTileValue = event.target.dataset.value;
-            if(selectedTile.textContent == ""){
-                if(isPlayerOneTurn) {selectedTile.textContent = "O";}
-                else selectedTile.textContent = "X";
-                board.announcementMessage(currentPlayer.playerId)
-                currentPlayer.updatePlayerSelection(selectedTileValue);
-                currentPlayer.winGameCheck();
-                board.turnChange()
+            if (!board.isGameOver()){
+                let selectedTile = event.target;
+                let selectedTileValue = event.target.dataset.value;
+                if(selectedTile.textContent == ""){
+                    if(isPlayerOneTurn) {selectedTile.textContent = "O";}
+                    else selectedTile.textContent = "X";
+                    board.announcementMessage(currentPlayer.playerId)
+                    // currentPlayer.updatePlayerSelection(selectedTileValue);
+                    board.setBoardState(selectedTileValue,currentPlayer.playerSymbol);
+                    board.checkWin(currentPlayer);
+                    board.turnChange()
+                }
+                else {
+                    // console.log("tile is already chosen")
+                }
             }
-            else {
-                // console.log("tile is already chosen")
-            }
-
-
         })
     }
 )
+
+function hello(event){
+    
+}
 
 // reset button
 const resetBtn = document.getElementById("restart")
 
 // add event listener to reset button
 resetBtn.addEventListener("click", board.resetBoard)
-
-// function tileSelected(){  
-// }
-
-
-
-// add event listener for reset button
